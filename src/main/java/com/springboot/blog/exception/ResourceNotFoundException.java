@@ -1,4 +1,4 @@
-package com.springboot.blog.config.exception;
+package com.springboot.blog.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,8 +1,7 @@
 package com.springboot.blog.entity;
 
 import lombok.Data;
-import javax.persistence.*;
-import java.util.Set;
+import jakarta.persistence.*;
 
 @Data
 @Entity
@@ -10,8 +9,11 @@ import java.util.Set;
 public class Role {
     @Id
     @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+            strategy = GenerationType.SEQUENCE,
+            generator = "rol_id_generator")
+    @SequenceGenerator(name = "rol_id_generator",
+            sequenceName = "rol_id_sequence",
+            allocationSize = 1)
     private Long id;
     @Column(length = 60)
     private String name;

@@ -2,12 +2,13 @@ package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.Comment;
 import com.springboot.blog.entity.Post;
-import com.springboot.blog.config.exception.BlogApiException;
-import com.springboot.blog.config.exception.ResourceNotFoundException;
+import com.springboot.blog.exception.BlogApiException;
+import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.payload.CommentDto;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class CommentServiceImpl  implements CommentService {
 
-    private final CommentRepository repository;
+    private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final ModelMapper mapper;
-
-    public CommentServiceImpl(CommentRepository repository, PostRepository postRepository, ModelMapper mapper) {
-        this.repository = repository;
-        this.postRepository = postRepository;
-        this.mapper = mapper;
-    }
 
     @Override
     public CommentDto createComment(long postId, CommentDto commentDto) {
@@ -41,7 +37,7 @@ public class CommentServiceImpl  implements CommentService {
         comment.setPost(post);
 
         // save comment
-        Comment newComment = repository.save(comment);
+        Comment newComment = commentRepository.save(comment);
 
         // map to Dto
         return mapToDto(newComment);
@@ -49,7 +45,7 @@ public class CommentServiceImpl  implements CommentService {
 
     @Override
     public List<CommentDto> getCommentsByPostId(long postId) {
-        return repository.findByPostId(postId)
+        return commentRepository.findByPostId(postId)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -68,14 +64,14 @@ public class CommentServiceImpl  implements CommentService {
         comment.setEmail(commentDto.getEmail());
         comment.setBody(commentDto.getBody());
 
-        Comment updatedComment = repository.save(comment);
+        Comment updatedComment = commentRepository.save(comment);
         return  mapToDto(updatedComment);
     }
 
     @Override
     public void deleteComment(Long postId, Long commentId) {
         Comment comment = findAndValidateComment(postId,commentId);
-        repository.delete(comment);
+        commentRepository.delete(comment);
     }
 
     private Comment findAndValidateComment(Long postId, Long commentId){
@@ -84,7 +80,7 @@ public class CommentServiceImpl  implements CommentService {
                 ()-> new ResourceNotFoundException("Post", "id",postId));
 
         // retrieve comment by id
-        Comment comment = repository.findById(commentId).orElseThrow(
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
                 ()-> new ResourceNotFoundException("Comment", "id", commentId));
 
         if(!comment.getPost().getId().equals(post.getId())){

@@ -2,20 +2,24 @@ package com.springboot.blog.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.HashSet;
+import jakarta.persistence.*;
 import java.util.Set;
 
 @Data
 @Entity
-@Table(name ="User", uniqueConstraints = {
+@Table(name ="users", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username"}),
         @UniqueConstraint(columnNames = {"email"})
 })
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_id_generator")
+    @SequenceGenerator(name = "user_id_generator",
+            sequenceName = "user_id_sequence",
+            allocationSize = 1)
     private Long id;
     private String name;
     private String username;

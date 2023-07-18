@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:15.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myblog
+    networks:
+      mired:
+  myblog-api:
+    container_name: myblog-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresdb
+    networks:
+      mired:
+    restart: on-failure
+networks:
+  mired:
+

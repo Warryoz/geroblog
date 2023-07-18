@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "warryos96/springboot-myblog",
+    "Update": true,
+    "Revision": "0.3.RELEASE"
+  },
+  "Ports": [{
+    "ContainerPort": "8080",
+    "Protocol": "tcp"
+  }]
+}

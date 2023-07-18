@@ -2,7 +2,7 @@ package com.springboot.blog.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,13 +14,16 @@ so we need just the setter and getter */
 @NoArgsConstructor
 
 @Entity
-@Table( name = "post",  uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
+@Table( name = "posts",  uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
 public class Post {
 
     @Id
     @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+            strategy = GenerationType.SEQUENCE,
+            generator = "post_id_generator")
+    @SequenceGenerator(name = "post_id_generator",
+            sequenceName = "post_id_sequence",
+            allocationSize = 1)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -34,5 +37,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }
