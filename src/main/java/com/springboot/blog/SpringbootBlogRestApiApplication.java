@@ -1,7 +1,6 @@
 package com.springboot.blog;
 
-import com.springboot.blog.entity.Role;
-import com.springboot.blog.repository.RoleRepository;
+import com.springboot.blog.auth.RoleRepository;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;

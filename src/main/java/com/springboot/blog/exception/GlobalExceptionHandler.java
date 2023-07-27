@@ -1,14 +1,14 @@
 package com.springboot.blog.exception;
 
-import com.springboot.blog.payload.ErrorDetails;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
 
     //handle specific exception
@@ -34,6 +34,33 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
                 webRequest.getDescription(false) );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+                                                                        WebRequest webRequest) {
+        // Extract the root cause of the exception
+        Throwable rootCause = ex.getRootCause();
+
+        // Check if the root cause is related to unique constraint violation
+        // Extract the duplicate column value from the exception message
+        // Create a concise error message
+        String errorMessage = extractIntegrityViolationMessage(rootCause.getMessage());
+
+        // Return the error message and the HTTP status code
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), errorMessage,
+                webRequest.getDescription(false) );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    // Helper method to extract the duplicate column value from the exception message
+    private static String extractIntegrityViolationMessage(String message) {
+        // Implement the logic to extract the duplicate column value from the exception message
+        // You might use regular expressions, String splitting, or any other suitable approach here.
+        // For simplicity, let's assume the message format is "[...]: (column_name)=(value) [...]"
+        int startIndex = message.indexOf("Detail:");
+        int endIndex = message.indexOf(".");
+        return message.substring(startIndex, endIndex);
     }
 
     // Validation
